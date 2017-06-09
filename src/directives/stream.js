@@ -34,17 +34,27 @@ export default {
 
     const subject = handle.subject
     const next = (subject.next || subject.onNext).bind(subject)
-    let fromEventArgs = handle.options ? [el, event, handle.options] : [el, event]
-    handle.subscription = Rx.Observable.fromEvent(...fromEventArgs).subscribe(e => {
-      next({
-        event: e,
-        data: handle.data
-      })
-    })
 
-    // store handle on element with a unique key for identifying
-    // multiple v-stream directives on the same node
-    ;(el._rxHandles || (el._rxHandles = {}))[getKey(binding)] = handle
+    if(vnode.componentInstance) {
+      vnode.componentInstance.$eventToObservable(event).subscribe(e => {
+        next({
+          event: e,
+          data: handle.data
+        })
+      })
+    } else {
+      let fromEventArgs = handle.options ? [el, event, handle.options] : [el, event]
+      handle.subscription = Rx.Observable.fromEvent(...fromEventArgs).subscribe(e => {
+        next({
+          event: e,
+          data: handle.data
+        })
+      })
+
+      // store handle on element with a unique key for identifying
+      // multiple v-stream directives on the same node
+      ;(el._rxHandles || (el._rxHandles = {}))[getKey(binding)] = handle
+    }
   },
 
   update (el, binding) {
