@@ -1,0 +1,7 @@
+{
+  "extends": "standard",
+  "globals": {
+    "Rx": true,
+    "Vue": true
+  }
+}
