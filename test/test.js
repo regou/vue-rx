@@ -10,6 +10,7 @@ const Observable = require('rxjs/Observable').Observable
 const Subject = require('rxjs/Subject').Subject
 const Subscription = require('rxjs/Subscription').Subscription
 require('rxjs/add/observable/fromEvent')
+require('rxjs/add/operator/catch')
 
 // user
 require('rxjs/add/operator/map')
@@ -24,7 +25,7 @@ const miniRx = {
 }
 
 Vue.config.productionTip = false
-Vue.use(VueRx, miniRx)
+Vue.use(VueRx, miniRx, true)
 
 const nextTick = Vue.nextTick
 
@@ -314,5 +315,30 @@ test('$eventToObservable() with lifecycle hooks', done => {
   })
   nextTick(() => {
     vm.$destroy()
+  })
+})
+
+test('safeSub', done => {
+  let result = ''
+  const vm = new Vue({
+    created () {
+      const st$ = this.$eventToObservable('num').map(num => num.msg.toString())
+      function onNext (val) {
+        result += val
+      }
+      function onError (error) {
+        error instanceof Error ? result += 'x' : ' '
+      }
+
+      st$.safeSub(this, onNext, onError)
+    }
+  })
+
+  const arr = [1, 2, null, 4]
+  arr.forEach(num => vm.$emit('num', num))
+
+  nextTick(() => {
+    expect(result).toEqual('12x4')
+    done()
   })
 })

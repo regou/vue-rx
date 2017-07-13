@@ -11,7 +11,7 @@ export function install (_Vue, _Rx) {
 export function hasRx (vm) {
   if (!Rx) {
     warn(
-      '$watchAsObservable requires Rx to be present globally or ' +
+      `Requires Rx to be present globally or ` +
       'be passed to Vue.use() as the second argument.',
       vm
     )

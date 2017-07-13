@@ -7,8 +7,9 @@ import watchAsObservable from './methods/watchAsObservable'
 import fromDOMEvent from './methods/fromDOMEvent'
 import subscribeTo from './methods/subscribeTo'
 import eventToObservable from './methods/eventToObservable'
+import extendSafeSub from './extends/safeSub'
 
-export default function VueRx (Vue, Rx) {
+export default function VueRx (Vue, Rx, extendRx) {
   install(Vue, Rx)
   Vue.mixin(rxMixin)
   Vue.directive('stream', streamDirective)
@@ -16,6 +17,10 @@ export default function VueRx (Vue, Rx) {
   Vue.prototype.$fromDOMEvent = fromDOMEvent
   Vue.prototype.$subscribeTo = subscribeTo
   Vue.prototype.$eventToObservable = eventToObservable
+
+  if (extendRx) {
+    extendSafeSub()
+  }
 }
 
 // auto install
